@@ -8,6 +8,8 @@ workflows:
     scripts:
       - name: Step name
         script: echo "Hello Codemagician!"
+      - name: Flutter IPA build
+        script: flutter build ipa
     publishing:
       email:
         recipients:
