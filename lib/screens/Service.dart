@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import '../templates/AppBarTemplate.dart';
 import '../templates/DrawerTemplate.dart';
 import '../templates/DrawerTemplateGeneral.dart';
+import 'package:http/http.dart' as http;
+import '../utils/Constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class Service extends StatefulWidget {
   final title;
@@ -59,15 +62,74 @@ class ServicePage extends StatefulWidget {
   _ServicePageState createState() => _ServicePageState(title);
 }
 
+
 class _ServicePageState extends State<ServicePage> {
 
   final title;
 
   _ServicePageState(this.title);
 
-  List fields = ["name","gender","bd","bm","by","bh","bmi","bs","bp"];
+  List fields = ["name","gender","contactNumber","bd","bm","by","bh","bmi","bs","bp"];
+  
 
-  List fieldTitles = ["Name","Gender","Birth Date","Birth Month","Birth Year","Birth Hour","Birth Minute","Birth Second","Birth Place"];
+  List fieldTitles = ["Name","Gender","Contact Number","Birth Date","Birth Month","Birth Year","Birth Hour","Birth Minute","Birth Second","Birth Place"];
+
+  var nameController = new TextEditingController();
+  var genderController = new TextEditingController();
+  var contactNumberController = new TextEditingController();
+  var bdController = new TextEditingController();
+  var bmController = new TextEditingController();
+  var byController = new TextEditingController();
+  var bhController = new TextEditingController();
+  var bmiController = new TextEditingController();
+  var bsController = new TextEditingController();
+  var bpController = new TextEditingController();
+
+  var _error = "";
+  var _success = "";
+
+  Future expressInterest() async{
+    
+    var nameEntered = nameController.text;
+    var genderEntered = genderController.text;
+    var contactNumberEntered = contactNumberController.text;
+    var bdEntered = bdController.text;
+    var bmEntered = bmController.text;
+    var byEntered = byController.text;
+    var bhEntered = bhController.text;
+    var bmiEntered = bmiController.text;
+    var bsEntered = bsController.text;
+    var bpEntered = bpController.text;
+    var service = title;
+
+
+    if(nameEntered==""||contactNumberEntered==""){
+      setState(() {
+        _error = "Please Enter Name and Contact Number";
+      });
+    }else{
+      setState(() {
+        _error = "";
+      });
+      var url = Constants.apiUrl+'record-service-interest';
+      var response = await http.post(Uri.parse(url), body: {'api_key': '5f4dbf2e5629d8cc19e7d51874266678', 'name': nameEntered, 'gender': genderEntered ,'contact_number': contactNumberEntered,"birth_date": bdEntered,"birth_month": bmEntered,"birth_year":byEntered,"birth_hour":bhEntered,"birth_minute": bmiEntered,"birth_second": bsEntered,"birth_place": bpEntered, "service": service});
+      if(response.statusCode==200){
+        var responseBody = jsonDecode(response.body);
+        if(responseBody["result"]=="failure"){
+          setState(() {
+            _error = responseBody["reason"];
+          });
+        }else{
+          _success = "We will connect with you shortly";
+        }
+      }else{
+          setState(() {
+            _error = "Please check your Internet connection or try again later";
+          });
+      }
+    }
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +143,12 @@ class _ServicePageState extends State<ServicePage> {
             ),
             Text(title, style: TextStyle(fontSize: 30.0)),
             SizedBox(
-              height: 10.0,
+              height:1.0,
+            ),
+            Text(_error,style: TextStyle(fontSize: 10.0,color: Colors.red),),
+            Text(_success,style: TextStyle(fontSize: 10.0,color: Colors.green),),
+            SizedBox(
+              height:1.0,
             ),
             ListView.builder(
               physics: ScrollPhysics(),
@@ -107,7 +174,14 @@ class _ServicePageState extends State<ServicePage> {
                 ),
               );
             },),
-            SizedBox(height: 20,),
+            SizedBox(
+              height: 5.0,
+            ),
+            Text(_error,style: TextStyle(fontSize: 10.0,color: Colors.red),),
+            Text(_success,style: TextStyle(fontSize: 10.0,color: Colors.green),),
+            SizedBox(
+              height: 5.0,
+            ),
             MaterialButton(
               height: 50.0,
               minWidth: double.infinity,
