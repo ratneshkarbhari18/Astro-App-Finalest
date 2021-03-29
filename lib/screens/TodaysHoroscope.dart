@@ -103,7 +103,7 @@ class _DailyHoroscopePageState extends State<DailyHoroscopePage> {
         child: Column(
           children: [
             SizedBox(height:20.0),
-            (horoscopeData!=null)?Center(child:CircularProgressIndicator()):Padding(padding: const EdgeInsets.all(15.0),
+            (horoscopeData==null)?Center(child:CircularProgressIndicator()):Padding(padding: const EdgeInsets.all(15.0),
               child: ListView.builder(
               shrinkWrap: true,
               physics: ScrollPhysics(),
