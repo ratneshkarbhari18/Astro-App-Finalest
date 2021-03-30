@@ -5,6 +5,11 @@ import 'package:astro_app/templates/AppBarTemplate.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import './Service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+
 
 
 
@@ -69,7 +74,77 @@ class _HomePageState extends State<HomePage> {
 
   List services = ["Personal Horoscope (Kundli)","Kundli Matching","Manglik Dosh","Kalsarp Dosh","Saade Saati Period","Gemstones","Graha Shanti","Remedies","Puja Recommendation", "Mantra Recommendation"];  
 
+  var pushNotifMessage = "";
 
+  Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+    // If you're going to use other Firebase services in the background, such as Firestore,
+    // make sure you call `initializeApp` before using other Firebase services.
+    await Firebase.initializeApp();
+    print('Handling a background message ${message.messageId}');
+  }
+
+    static const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'high_importance_channel', // id
+    'High Importance Notifications', // title
+    'This channel is used for important notifications.', // description
+    importance: Importance.high,
+  );
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+  Future initFirebase() async{
+    await Firebase.initializeApp();
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+    ?.createNotificationChannel(channel);
+    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+  }
+
+    // Creating a notification
+  FlutterLocalNotificationsPlugin localNotification;
+
+
+  Future _showNotification(title,body) async{
+    var androidDetails = new AndroidNotificationDetails("general_tips", "Share Market Tips", "General Share Market Tips for All");
+    var iosDetails = new IOSNotificationDetails(
+      threadIdentifier: 'thread_id'
+    );
+    var generalNotifDetails = new NotificationDetails(android: androidDetails,iOS: iosDetails);
+    await localNotification.show(0, title, body, generalNotifDetails);
+
+  }
+
+  @override
+  void initState() {
+    
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification notification = message.notification;
+      AndroidNotification android = message.notification?.android;
+      if (notification != null && android != null) {
+        flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                channel.id,
+                channel.name,
+                channel.description,
+                icon: 'app_icon',
+              ),
+            ));
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
