@@ -133,8 +133,6 @@ class _ServicePageState extends State<ServicePage> {
 
   }
 
-  final _formKey = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -147,12 +145,7 @@ class _ServicePageState extends State<ServicePage> {
             ),
             Text(title, style: TextStyle(fontSize: 30.0)),
             SizedBox(
-              height:1.0,
-            ),
-            Text(_error,style: TextStyle(fontSize: 20.0,color: Colors.red),),
-            Text(_success,style: TextStyle(fontSize: 20.0,color: Colors.green),),
-            SizedBox(
-              height:1.0,
+              height:10.0,
             ),
             ListView(
               shrinkWrap: true,

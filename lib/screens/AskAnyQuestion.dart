@@ -60,6 +60,53 @@ class _AskAnyQuestionPageState extends State<AskAnyQuestionPage> {
   var contactNumberController = new TextEditingController();
   var messageController = new TextEditingController();
 
+  var _error = "";
+  var _success = "";
+
+  Future sendQuestion() async{
+    var firstName = firstNameController.text;
+    var lastName = lastNameController.text;
+    var contactNumber = contactNumberController.text;
+    var message = messageController.text;
+    if(firstName==""||lastName==""||message==""||contactNumber==""){
+      setState(() {
+        _error = "Please Enter First Name, Last Name, Message and Contact Number";
+      });
+    }else{
+      setState(() {
+        _error = "";
+      });
+
+      var url = Constants.apiUrl+'send-question-api';
+      var response = await http.post(Uri.parse(url), body: {'api_key': '5f4dbf2e5629d8cc19e7d51874266678', 'first_name': firstName, 'last_name': lastName ,"contact_number": contactNumber, "question": message});
+
+      var responseBody = jsonDecode(response.body);
+      if(response.statusCode==200){
+        
+        setState(() {
+          _error = "";
+        });
+
+        if(responseBody["result"]=="failure"){
+          setState(() {
+            _error = responseBody["reason"];
+          });
+        }else{
+          setState(() {
+            _success = "We will connect with you shortly";
+          });
+        }
+
+
+      }else{
+          setState(() {
+          _error = "Could not connect to server, please check your internet connection";
+        });
+      }
+
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -67,6 +114,14 @@ class _AskAnyQuestionPageState extends State<AskAnyQuestionPage> {
           padding: const EdgeInsets.all(15.0),
           child: Column(
           children: [
+            SizedBox(
+              height: 5.0,
+            ),
+            Text(_error,style: TextStyle(fontSize: 20.0,color: Colors.red),),
+            Text(_success,style: TextStyle(fontSize: 20.0,color: Colors.green),),
+            SizedBox(
+              height: 5.0,
+            ),
             SizedBox(
               height: 20.0,
             ),
@@ -123,9 +178,9 @@ class _AskAnyQuestionPageState extends State<AskAnyQuestionPage> {
             MaterialButton(
               height: 50.0,
               minWidth: double.maxFinite,
-              onPressed: (){},
+              onPressed: sendQuestion,
               color: Colors.blue,
-              child: Text("LOGIN",style: TextStyle(color: Colors.white,fontSize: 16.0)),
+              child: Text("SEND QUESTION",style: TextStyle(color: Colors.white,fontSize: 16.0)),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
             ),
           ],
