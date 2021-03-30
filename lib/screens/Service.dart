@@ -69,10 +69,6 @@ class _ServicePageState extends State<ServicePage> {
 
   _ServicePageState(this.title);
 
-  List fields = ["name","gender","contactNumber","bd","bm","by","bh","bmi","bs","bp"];
-  
-
-  List fieldTitles = ["Name","Gender","Contact Number","Birth Date","Birth Month","Birth Year","Birth Hour","Birth Minute","Birth Second","Birth Place"];
 
   var nameController = new TextEditingController();
   var genderController = new TextEditingController();
@@ -85,8 +81,11 @@ class _ServicePageState extends State<ServicePage> {
   var bsController = new TextEditingController();
   var bpController = new TextEditingController();
 
+
+
   var _error = "";
   var _success = "";
+
 
   Future expressInterest() async{
     
@@ -113,6 +112,7 @@ class _ServicePageState extends State<ServicePage> {
       });
       var url = Constants.apiUrl+'record-service-interest';
       var response = await http.post(Uri.parse(url), body: {'api_key': '5f4dbf2e5629d8cc19e7d51874266678', 'name': nameEntered, 'gender': genderEntered ,'contact_number': contactNumberEntered,"birth_date": bdEntered,"birth_month": bmEntered,"birth_year":byEntered,"birth_hour":bhEntered,"birth_minute": bmiEntered,"birth_second": bsEntered,"birth_place": bpEntered, "service": service});
+
       if(response.statusCode==200){
         var responseBody = jsonDecode(response.body);
         if(responseBody["result"]=="failure"){
@@ -120,7 +120,9 @@ class _ServicePageState extends State<ServicePage> {
             _error = responseBody["reason"];
           });
         }else{
-          _success = "We will connect with you shortly";
+          setState(() {
+            _success = "We will connect with you shortly";
+          });
         }
       }else{
           setState(() {
@@ -130,6 +132,8 @@ class _ServicePageState extends State<ServicePage> {
     }
 
   }
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -145,47 +149,159 @@ class _ServicePageState extends State<ServicePage> {
             SizedBox(
               height:1.0,
             ),
-            Text(_error,style: TextStyle(fontSize: 10.0,color: Colors.red),),
-            Text(_success,style: TextStyle(fontSize: 10.0,color: Colors.green),),
+            Text(_error,style: TextStyle(fontSize: 20.0,color: Colors.red),),
+            Text(_success,style: TextStyle(fontSize: 20.0,color: Colors.green),),
             SizedBox(
               height:1.0,
             ),
-            ListView.builder(
-              physics: ScrollPhysics(),
-              itemCount: fields.length,
+            ListView(
               shrinkWrap: true,
-              itemBuilder: (context,index){
-              return Container(
-                child: Column(
-                  children: [
-                    SizedBox(
-                    height: 20.0,
-                    ),
-                    TextField(
-                      keyboardType: TextInputType.name,
-                      decoration: InputDecoration(
-                          labelText: fieldTitles[index],
-                          border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                        )
-                      ),
-                    )
-                  ],
+              physics: ScrollPhysics(),
+              children: [
+                SizedBox(
+                height: 20.0,
                 ),
-              );
-            },),
+                TextFormField(
+                  controller: nameController,
+                  keyboardType: TextInputType.name,
+                  decoration: InputDecoration(
+                      labelText: "Name",
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                    )
+                  ),
+                ),
+                SizedBox(
+                height: 20.0,
+                ),
+                TextFormField(
+                  controller: genderController,
+                  keyboardType: TextInputType.name,
+                  decoration: InputDecoration(
+                      labelText: "Gender",
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                    )
+                  ),
+                ),
+                SizedBox(
+                height: 20.0,
+                ),
+                TextFormField(
+                  controller: contactNumberController,
+                  keyboardType: TextInputType.name,
+                  decoration: InputDecoration(
+                      labelText: "Contact Number",
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                    )
+                  ),
+                ),
+                SizedBox(
+                height: 20.0,
+                ),
+                TextFormField(
+                  controller: bdController,
+                  keyboardType: TextInputType.name,
+                  decoration: InputDecoration(
+                      labelText: "Birth Date",
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                    )
+                  ),
+                ),
+                SizedBox(
+                height: 20.0,
+                ),
+                TextFormField(
+                  controller: bmController,
+                  keyboardType: TextInputType.name,
+                  decoration: InputDecoration(
+                      labelText: "Birth Month",
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                    )
+                  ),
+                ),
+                SizedBox(
+                height: 20.0,
+                ),
+                TextFormField(
+                  controller: byController,
+                  keyboardType: TextInputType.name,
+                  decoration: InputDecoration(
+                      labelText: "Birth Year",
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                    )
+                  ),
+                ),
+                SizedBox(
+                height: 20.0,
+                ),
+                TextFormField(
+                  controller: bhController,
+                  keyboardType: TextInputType.name,
+                  decoration: InputDecoration(
+                      labelText: "Birth Hour",
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                    )
+                  ),
+                ),
+                SizedBox(
+                height: 20.0,
+                ),
+                TextFormField(
+                  controller: bmiController,
+                  keyboardType: TextInputType.name,
+                  decoration: InputDecoration(
+                      labelText: "Birth Minute",
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                    )
+                  ),
+                ),
+                SizedBox(
+                height: 20.0,
+                ),
+                TextFormField(
+                  controller: bsController,
+                  keyboardType: TextInputType.name,
+                  decoration: InputDecoration(
+                      labelText: "Birth Second",
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                    )
+                  ),
+                ),
+                SizedBox(
+                height: 20.0,
+                ),
+                TextFormField(
+                  controller: bpController,
+                  keyboardType: TextInputType.name,
+                  decoration: InputDecoration(
+                      labelText: "Birth Place",
+                      border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                    )
+                  ),
+                ),
+              ],  
+            ),
             SizedBox(
               height: 5.0,
             ),
-            Text(_error,style: TextStyle(fontSize: 10.0,color: Colors.red),),
-            Text(_success,style: TextStyle(fontSize: 10.0,color: Colors.green),),
+            Text(_error,style: TextStyle(fontSize: 20.0,color: Colors.red),),
+            Text(_success,style: TextStyle(fontSize: 20.0,color: Colors.green),),
             SizedBox(
               height: 5.0,
             ),
             MaterialButton(
               height: 50.0,
               minWidth: double.infinity,
-              onPressed: (){},
+              onPressed: expressInterest,
               color: Colors.blue,
               child: Text("Send",style: TextStyle(color: Colors.white,fontSize: 16.0)),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
