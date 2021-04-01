@@ -5,7 +5,6 @@ import 'package:astro_app/templates/AppBarTemplate.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import './Service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -76,35 +75,22 @@ class _HomePageState extends State<HomePage> {
 
   var pushNotifMessage = "";
 
-  Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-    // If you're going to use other Firebase services in the background, such as Firestore,
-    // make sure you call `initializeApp` before using other Firebase services.
-    await Firebase.initializeApp();
-    print('Handling a background message ${message.messageId}');
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
+  _registerOnFirebase() {
+    _firebaseMessaging.subscribeToTopic('all');
+    _firebaseMessaging.getToken().then((token) => print(token));
   }
 
-    static const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'high_importance_channel', // id
-    'High Importance Notifications', // title
-    'This channel is used for important notifications.', // description
-    importance: Importance.high,
-  );
-
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-
-  Future initFirebase() async{
-    await Firebase.initializeApp();
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-    ?.createNotificationChannel(channel);
-    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+  void getMessage() {
+    _firebaseMessaging.configure(
+        onMessage: (Map<String, dynamic> message) async {
+      _showNotification(message["notification"]["title"],message["notification"]["body"]);
+    }, onResume: (Map<String, dynamic> message) async {
+      _showNotification(message["notification"]["title"],message["notification"]["body"]);
+    }, onLaunch: (Map<String, dynamic> message) async {
+      _showNotification(message["notification"]["title"],message["notification"]["body"]);
+    });
   }
 
     // Creating a notification
@@ -112,7 +98,7 @@ class _HomePageState extends State<HomePage> {
 
 
   Future _showNotification(title,body) async{
-    var androidDetails = new AndroidNotificationDetails("general_tips", "Share Market Tips", "General Share Market Tips for All");
+    var androidDetails = new AndroidNotificationDetails("genera_notifications", "General Notifications", "General Notifications");
     var iosDetails = new IOSNotificationDetails(
       threadIdentifier: 'thread_id'
     );
@@ -123,28 +109,16 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification notification = message.notification;
-      AndroidNotification android = message.notification?.android;
-      if (notification != null && android != null) {
-        flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(
-                channel.id,
-                channel.name,
-                channel.description,
-                icon: 'app_icon',
-              ),
-            ));
-      }
-    });
+    var androidInitialize = new AndroidInitializationSettings("app_icon");
+    var iosInitializa = new IOSInitializationSettings();
+    var intiailizationSettings = new InitializationSettings(android: androidInitialize, iOS: iosInitializa);
+    localNotification = new FlutterLocalNotificationsPlugin();
+    localNotification.initialize(intiailizationSettings);
+    _registerOnFirebase();
+    getMessage();    
     super.initState();
   }
+
 
   @override
   Widget build(BuildContext context) {
