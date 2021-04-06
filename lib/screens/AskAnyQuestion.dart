@@ -114,9 +114,8 @@ class _AskAnyQuestionPageState extends State<AskAnyQuestionPage> {
           padding: const EdgeInsets.all(15.0),
           child: Column(
           children: [
-            SizedBox(
-              height: 5.0,
-            ),
+            
+            Image.asset("assets/images/logo.jpg"),
             Text(_error,style: TextStyle(fontSize: 20.0,color: Colors.red),),
             Text(_success,style: TextStyle(fontSize: 20.0,color: Colors.green),),
             SizedBox(

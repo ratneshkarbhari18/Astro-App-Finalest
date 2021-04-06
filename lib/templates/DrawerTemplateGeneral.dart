@@ -1,3 +1,5 @@
+import 'package:astro_app/screens/HowItWorks.dart';
+import 'package:astro_app/screens/OurAstrologers.dart';
 import 'package:flutter/material.dart';
 import '../screens/Contact.dart';
 import '../screens/About.dart';
@@ -35,9 +37,15 @@ class DrawerTemplateGeneral extends StatelessWidget {
           ),
           ),
           ListTile(
-            title: Text("Todays Horoscope"),
+            title: Text("Our Astrologers"),
             onTap: (){
-              Navigator.push(context,MaterialPageRoute(builder: (context)=> TodaysHoroscope()));
+              Navigator.push(context,MaterialPageRoute(builder: (context)=> OurAstrologers()));
+            },
+          ),
+          ListTile(
+            title: Text("How It Works"),
+            onTap: (){
+              Navigator.push(context,MaterialPageRoute(builder: (context)=> HowItWorks()));
             },
           ),
           ListTile(
